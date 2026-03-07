@@ -6,6 +6,8 @@ Unlike other custom browsers that act as a simple wrapper around off-the-shelf e
 
 This project is meant to be a fun, highly modular sandbox. If you want to learn how web browsers actually work under the hood, this is the perfect place to start.
 
+![PyWebCore image](image.png)
+
 ---
 
 ## Getting Started
