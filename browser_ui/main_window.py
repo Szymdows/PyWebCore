@@ -24,11 +24,30 @@ class PyWebCoreWindow(QMainWindow):
         self.nav_bar.back_action.triggered.connect(self.engine.go_back)
         self.nav_bar.forward_action.triggered.connect(self.engine.go_forward)
         self.nav_bar.reload_action.triggered.connect(self.engine.reload)
+        
+        # Connect the URL bar "Enter" key to the engine's navigate function
+        self.nav_bar.url_bar.returnPressed.connect(self.on_url_bar_entered)
 
-        # 3. Bind Engine Core output to our Web View display
-        self.engine.set_ui_callback(self.web_view.display_rendered_page)
+        # 3. Bind Engine Core output to our Web View display and URL bar
+        self.engine.set_ui_callbacks(
+            render_callback=self.web_view.display_rendered_page,
+            url_callback=self.update_url_bar
+        )
 
         # 4. Tell the engine to load the homepage!
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         homepage_path = os.path.join(base_dir, "homepage.html")
         self.engine.navigate(homepage_path)
+
+    def on_url_bar_entered(self):
+        """Triggered when the user presses Enter in the address bar."""
+        url = self.nav_bar.url_bar.text().strip()
+        if url:
+            # Quick quality-of-life fix: auto-add http:// if they just type example.com
+            if not url.startswith("http") and not url.endswith(".html"):
+                url = "http://" + url
+            self.engine.navigate(url)
+
+    def update_url_bar(self, url):
+        """Triggered by the engine when a page successfully loads."""
+        self.nav_bar.url_bar.setText(url)
